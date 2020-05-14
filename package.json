@@ -1,0 +1,24 @@
+{
+  "name": "picopipe",
+  "version": "0.0.1",
+  "description": "A build pipeline for pico-8 games.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "editor": "node index.js",
+    "extract": "node bin/extract.js",
+    "build": "node bin/build.js"
+  },
+  "keywords": [
+    "pico8",
+    "pico-8"
+  ],
+  "author": "Lee Nattress",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "fs-sync": "^1.0.6",
+    "luamin": "^1.0.4"
+  }
+}

@@ -1,0 +1,1435 @@
+
+
+<html>
+<head>
+
+	<title>Pico8 Vector Animation tool by @gabrielcrowe</title>
+	<meta charset="utf-8"/>
+	<script src="jquery-3.2.1.min.js"></script>
+
+<script type="text/javascript" src="polyk.js"></script>
+
+<link href="bootstrap.css" rel="stylesheet">
+<style>
+.container { width: 1200px !important; }
+</style>
+</head>
+<body>
+	<div class="container">
+
+		<div class="row" style="margin-top:10px;">
+
+		<div class="col-sm-12" style="margin-bottom:10px;">
+
+			<div class="frame-group">
+			  <div id="frames-row" class="frames-row">
+			    <div class="frame-thumb">1</div>
+			  </div>
+			</div>
+
+		</div>
+
+
+			<div class="col-xs-2">
+				<div class="row">
+					<div class="col-xs-6">
+						<div id="palette"></div>
+					</div>
+					<div class="col-xs-6">
+						<div id="palette2"></div>
+					</div>
+			<div class="col-xs-12">
+					<hr>
+					<button type="button" id="clearworkspace" class="btn btn-warning btn-block">NEW</button>
+			<!--<button type="button" id="loadworkspace" data-wsnum="1" class="btn btn-success btn-block btn-sm">LOAD</button>-->
+			<button type="button" id="DLworkspace" data-wsnum="1" class="btn btn-danger btn-block btn-sm">DOWNLOAD</button>
+			<button type="button" id="saveworkspace" data-wsnum="1" class="btn btn-danger btn-block btn-sm">SAVE</button>
+			<button type="button" id="decode" class="btn btn-info btn-block btn-sm">IMPORT</button>
+			<button type="button" id="encode" class="btn btn-info btn-block btn-sm">EXPORT</button>
+			<a id="downloadAnchorElem" style="display:none"></a>
+
+<!--<input type="file" onchange="readFiles(event)">-->
+
+</div>
+
+				</div>
+			</div>
+			<!--<div class="col-xs-1">-->
+			<!--	<div id="palette2"></div>-->
+			<!--	</div>-->
+		        <div class="col-xs-8"><div id="maincanvas"><canvas id="canvas">OOPS.. Upgrade your Browser</canvas></div></div>
+		        <div class="col-xs-2">
+
+<div id="debugdata"></div>
+
+						<form class="form-horizontal">
+						  <div class="form-group">
+						    <label for="inputEmail3" class="col-sm-4 control-label">Variable:</label>
+						    <div class="col-sm-8">
+						      <input type="text" class="form-control" id="variable" placeholder="Variable Name..." value="vectordata">
+						    </div>
+						  </div>
+						</form>
+
+						<hr>
+
+							<h4>Layers</h4>
+							<ul class="list-group" id="layers-list">
+							  <li class="list-group-item">layers 1</li>
+							</ul>
+
+							<button class="btn btn-sm" id="button-up"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></button>
+							<button class="btn btn-sm" id="button-down"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></button>
+							<button class="btn btn-sm" id="button-new"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
+							<button class="btn btn-sm" id="button-delete"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+
+	<!--<hr>-->
+	<!--						<button class="btn" id="button-duplicate"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span></button>-->
+
+
+						</div>
+		</div>
+
+
+
+
+		<div class="col-sm-12">
+			<div id="debugLUA" style="word-wrap:break-word;"></div>
+			<div id="debugJS" style="word-wrap:break-word;display:none;"></div>
+		</div>
+
+
+
+	<div class="row">
+		<div class="col-sm-4">
+			<h2>Keys:</h2>
+			<ul class="list-group">
+				<li class="list-group-item">G - Toggle guides</li>
+				<li class="list-group-item">[ - Select previous layer</li>
+				<li class="list-group-item">] - Select next layer</li>
+				<li class="list-group-item">&lt; - Move layer on top</li>
+				<li class="list-group-item">&gt; - Move layer below</li>
+				<li class="list-group-item">Plus - Select next animation frame</li>
+				<li class="list-group-item">Minus - Select previous animation frame</li>
+				<li class="list-group-item">Arrow Keys - Nudge vertex/layer</li>
+				<li class="list-group-item">Shift+Click - Delete Vertex</li>
+				<li class="list-group-item">Alt+Click - Add Vertex to line</li>
+			</ul>
+		</div>
+		<div class="col-sm-8">
+		<h1>Pico8 Vector Editing Tool <small>Help</small></h1>
+
+		<p>This is an experimental tool to draw vector shapes to use in your <a href="https://twitter.com/search?q=%23pico8&amp;src=typd">#pico8</a> games.</p>
+
+
+<style>.contentItalic { font-style: italic; } </style>
+<div class="formattedExport">
+		<ul>
+			<li>
+				<span class="name">Manage animation frames</span>
+				<ul>
+					<li><span class="name">Plus on the top bar adds a <span class="contentItalic">frame</span></span></li>
+					<li><span class="name">Trash icon on <span class="contentItalic">frame</span> deletes</span></li>
+					<li><span class="name">Click on frame to switch to <span class="contentItalic">frame</span></span></li>
+					<li><span class="name">Keyboard shortcut plus and minus change <span class="contentItalic">frames</span></span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Manage Layers</span>
+				<ul>
+					<li><span class="name">Add a <span class="contentItalic">layer</span> with new page icon</span></li>
+					<li><span class="name">Delete <span class="contentItalic">layer</span> with trash icon</span></li>
+					<li><span class="name">Change <span class="contentItalic">layer</span> order with up and down arrows</span></li>
+					<li><span class="name">Shortcut to change <span class="contentItalic">layers</span> is chevron keys</span></li>
+					<li><span class="name">Square bracket '[' and ']' keys select layer above and layer below.</span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Manage Vertexes</span>
+				<ul>
+					<li><span class="name">Hovering the mouse makes a <span class="contentItalic">vertex</span> selected green</span></li>
+					<li><span class="name">Non-selected <span class="contentItalic">vertexes</span> are blue.</span></li>
+					<li><span class="name">Press escape to deselect all <span class="contentItalic">vertexes</span> making sure the mouse is not hovering</span></li>
+					<li><span class="name">While a <span class="contentItalic">vertex</span> is selected, use the arrow keys to move it single pixels.</span></li>
+					<li><span class="name">With no <span class="contentItalic">vertex</span> selected, the arrow keys move the entire layer.</span></li>
+					<li><span class="name">Hold left shift to move 8 pixels, instead of 1</span></li>
+					<li><span class="name">Hold left shift and clicking a <span class="contentItalic">vertex</span> deletes it</span></li>
+					<li><span class="name">Hold left alt and clicking on a line adds a <span class="contentItalic">vertex</span></span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Choosing Colours</span>
+				<ul>
+					<li><span class="name">Each <span class="contentItalic">layer</span> can have 2 colours</span></li>
+					<li><span class="name">Click on a colour on the left panel to choose the first colour and</span></li>
+					<li><span class="name">Click the second colour to create alternating lines</span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Guide Layer</span>
+				<ul>
+					<li><span class="name">You can press 'G' on the keyboard to toggle drawing guides</span></li>
+					<li><span class="name">The area inside the square will fill a pico8 screen because it represents 128 by 128 pixels.</span></li>
+					<li><span class="name">The entire canvas is 256 by 256 pixels</span></li>
+					<li><span class="name">The demo cart listed allows scaling using the z and x buttons in pico8 to see the parts outside the guide square.</span></li>
+					<li><span class="name">You can copy an image from the web or photoshop and paste it into the canvas providing the image is 256 by 256 pixels. your image can then be traced over.</span></li>
+					<li><span class="name">Pasting frames of an animation allows something similar to rotoscoping</span></li>
+					<li><span class="name">When you re load the page the pasted image is lost so keep a copy of it saved on your local computer</span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Files and data</span>
+				<ul>
+					<li><span class="name">This tool keeps the data for the vectors stored in a javascript array</span></li>
+					<li><span class="name">You can download a copy of the array used by pressing the 'download' button.</span></li>
+					<li><span class="name">You can import this json array with the import button</span></li>
+					<li><span class="name">These buttons are light blue in the interface</span></li>
+					<li><span class="name">Pressing the red save button will commit this data to local browser storage.</span></li>
+					<li><span class="name">When you close the window and come back later this data will be re-loaded so you can continue where you left off.</span></li>
+					<li><span class="name">Think of this like a 'quick save'.</span></li>
+					<li><span class="name">Pressing the orange 'NEW' button will clear everything and start again.</span></li>
+					<li><span class="name">Pressing the 'EXPORT' button produces data for you to paste into your pico8 cart to view the vectors.</span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Pico8 Test Cart</span>
+				<ul>
+					<li><span class="name">This first experimental release comes with a quick cart to display any vectors you make.</span></li>
+					<li><span class="name">Copy the code from the supplied gist and paste it into your pico8.</span></li>
+					<li><span class="name">When you run it you should find MC Hammer dancing away.</span></li>
+					<li><span class="name">Near the top of the cart you will find a place to paste the vector code you can export from the 'EXPORT' button.</span></li>
+					<li><span class="name">Run your cart and you should see any shapes or animations</span></li>
+					<li><span class="name"><a target="_blank" href="https://gist.github.com/gabrielcrowe/3d29799859289bc22c1a9d064578253e">Find it here</a> (new window)</span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Getting help</span>
+				<ul>
+					<li><span class="name">If you need some help using this tool then find me on twitter: <a target="_blank" href="https://twitter.com/gabrielcrowe">https://twitter.com/gabrielcrowe</a></span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Examples</span>
+				<ul>
+					<li><span class="name">MC Hammer: <a target="_blank" href="https://twitter.com/gabrielcrowe/status/904421706659495936">https://twitter.com/gabrielcrowe/status/904421706659495936</a></span></li>
+					<li><span class="name">Mario Face: <a target="_blank" href="https://twitter.com/gabrielcrowe/status/909476418463125509">https://twitter.com/gabrielcrowe/status/909476418463125509</a></span><br>
+					<span class="note">Data-&gt; <a target="_blank" href="https://gist.github.com/anonymous/1dc3f0bce219601c24e37dfac2e0d4c1">https://gist.github.com/anonymous/1dc3f0bce219601c24e37dfac2e0d4c1</a></span></li>
+					<li><span class="name">Sonic: <a target="_blank" href="https://twitter.com/gabrielcrowe/status/901568795243925506">https://twitter.com/gabrielcrowe/status/901568795243925506</a></span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Your work</span>
+				<ul>
+					<li><span class="name">Please tweet me any cool stuff you make with this to <a target="_blank" href="https://twitter.com/gabrielcrowe">@gabrielcrowe</a></span></li>
+					<li><span class="name">I would love to see this used in a game.</span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">Thankyou</span>
+				<ul>
+					<li><span class="name">Zep for Pico8</span></li>
+					<li><span class="name">You rock.</span></li>
+				</ul>
+			</li>
+			<li>
+				<span class="name">This list</span>
+				<ul>
+					<li><span class="name">Was made in <a target="_blank" href="https://workflowy.com/">https://workflowy.com/</a></span></li>
+					<li><span class="name">All hail Workflowy</span></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+		<h2>Pico8 Code To Display Vectors</h2>
+		<script src="https://gist.github.com/gabrielcrowe/3d29799859289bc22c1a9d064578253e.js"></script>
+
+
+		</div>
+	</div>
+
+
+	</div>
+
+
+
+
+
+<script>
+
+/*
+Notes:
+
+
+
+
+*/
+
+
+// self executing function here
+// A $( document ).ready() block.
+$( document ).ready(function() {
+
+
+//no scrolling without the mouse..
+var ar=new Array(33,34,35,36,37,38,39,40);
+
+$(document).keydown(function(e) {
+     var key = e.which;
+      //console.log(key);
+      //if(key==35 || key == 36 || key == 37 || key == 39)
+      if($.inArray(key,ar) > -1) {
+          e.preventDefault();
+          return false;
+      }
+      return true;
+});
+
+
+
+//pico8 colours
+var palette = [];
+palette[0]='#000000'; //black
+palette[1]='#1D2B53'; //dark-blue
+palette[2]='#7E2553'; //dark-purple
+palette[3]='#008751'; //dark-green
+palette[4]='#AB5236'; //brown
+palette[5]='#5F574F'; //dark-gray
+palette[6]='#C2C3C7'; //light-gray
+palette[7]='#FFF1E8'; //white
+palette[8]='#FF004D'; //red
+palette[9]='#FFA300'; //orange
+palette[10]='#FFEC27'; //yellow
+palette[11]='#00E436'; //green
+palette[12]='#29ADFF'; //blue
+palette[13]='#83769C'; //indigo
+palette[14]='#FF77A8'; //pink
+palette[15]='#FFCCAA'; //peach
+
+var hover_tolerance = 8;
+var line_selected = -1;
+
+
+isBetween = function(a,b,c, tolerance){
+
+    //test if the point c is inside a pre-defined distance (tolerance) from the line
+    var distance = Math.abs((c.y - b.y)*a.x - (c.x - b.x)*a.y + c.x*b.y - c.y*b.x) / Math.sqrt(Math.pow((c.y-b.y),2) + Math.pow((c.x-b.x),2));
+    if (distance > tolerance){ return false; }
+
+    //test if the point c is between a and b
+    var dotproduct = (c.x - a.x) * (b.x - a.x) + (c.y - a.y)*(b.y - a.y)
+    if(dotproduct < 0){ return false; }
+
+    var squaredlengthba = (b.x - a.x)*(b.x - a.x) + (b.y - a.y)*(b.y - a.y);
+    if(dotproduct > squaredlengthba){ return false; }
+
+    return true;
+};
+
+//code to make dashed lines
+//http://vetruvet.blogspot.co.uk/2010/10/drawing-dashed-lines-on-html5-canvas.html
+CanvasRenderingContext2D.prototype.dashedLine = function(x1, y1, x2, y2, dashLen, color) {
+    if (dashLen == undefined) dashLen = 2;
+    if (color == undefined) color = "#000";
+
+    this.beginPath();
+    this.moveTo(x1, y1);
+    this.strokeStyle = color
+
+    var dX = x2 - x1;
+    var dY = y2 - y1;
+    var dashes = Math.floor(Math.sqrt(dX * dX + dY * dY) / dashLen);
+    var dashX = dX / dashes;
+    var dashY = dY / dashes;
+
+    var q = 0;
+    while (q++ < dashes) {
+     x1 += dashX;
+     y1 += dashY;
+     this[q % 2 == 0 ? 'moveTo' : 'lineTo'](x1, y1);
+    }
+    this[q % 2 == 0 ? 'moveTo' : 'lineTo'](x2, y2);
+
+    this.stroke();
+    this.closePath();
+};
+
+function toPaddedHexString(num, len) {
+    str = num.toString(16);
+    return "0".repeat(len - str.length) + str;
+}
+
+function earcut_repackage(frame){
+
+
+
+	var new_array = [];
+	//var layers = [layers]; //this is just because we are dealing with one frame right now;
+
+	//loop animation layers
+	//for (var f = 0, len = layers.length; f < len; f++) {
+	//	var frame = layers[f];
+
+		//console.log('FRAME',frame)
+		//loop layers in this frame, take into account colours at the front
+		for (var p = 0, len = frame.length; p < len; p++) {
+
+			var layer = frame[p]; //extract the layers
+			var col1 = toPaddedHexString(layer[0],2); //this is the colour1
+			var col2 = toPaddedHexString(layer[1],2); //this is the colour2
+			var remainder = layer.slice(2); //this is whats left
+
+			var triangles = PolyK.Triangulate(remainder); //convert to tris
+			//console.log('COORDS',remainder)
+			//console.log('TRIS',triangles)
+
+			var new_triangles = []
+			for (var v = 0, len2 = triangles.length; v < len2; v+=1) {
+				thisx = remainder[triangles[v]*2]
+				thisy = remainder[(triangles[v]*2)+1]
+
+				new_triangles.push(toPaddedHexString(thisx,2)); //put the right numbers back
+				new_triangles.push(toPaddedHexString(thisy,2));
+			}
+
+			new_array.push( [col1,col2,new_triangles] );
+
+		}
+
+	//}
+
+
+
+	return new_array;
+}
+
+//fill palette buttons
+for (var i = 0, len = palette.length; i < len; i++) {
+  $('#palette').append('<button class="btn btn-block set-color" data-colour="'+i+'" style="height:20px; background-color:'+palette[i]+'"></button>')
+}
+for (var i = 0, len = palette.length; i < len; i++) {
+  $('#palette2').append('<button class="btn btn-block set-color2" data-colour="'+i+'" style="height:20px; background-color:'+palette[i]+'"></button>')
+}
+
+
+	$( ".set-color" ).click(function() {
+		col = $(this).data('colour'); //what colour button is this?
+		layer=layers[layer_selected]; //get this layer
+		layer[0] = col; //set the colour
+		layers[layer_selected] = layer //put the layer back where it belongs
+	});
+
+	$( ".set-color2" ).click(function() {
+		col = $(this).data('colour'); //what colour button is this?
+		layer=layers[layer_selected]; //get this layer
+		layer[1] = col; //set the colour
+		layers[layer_selected] = layer //put the layer back where it belongs
+	});
+
+
+
+
+// $('#debugLUA').easyModal({
+// 		overlayClose: false,
+// 		onOpen: function(myModal){
+// 			//$(myModal).append('Opened!');
+// 		}
+// 	});
+
+	$( "#button-new" ).click(function() { NewLayer(); gui_update_layers(); });
+	$( "#button-delete" ).click(function() { Deletelayers(layer_selected); gui_update_layers(); });
+	$( "#button-up" ).click(function() { layers = layers_swap_up(layers, layer_selected); gui_update_layers(); });
+	$( "#button-down" ).click(function() { layers = layers_swap_down(layers, layer_selected); gui_update_layers(); });
+	// $( "#button-duplicate" ).click(function() { layers_duplicate(); gui_update_layers(); });
+
+
+	$( "#encode" ).click(function() {
+
+	   jsondata = JSON.stringify(animation)
+	   $("#debugJS").html(jsondata);
+
+	   animation_repackage = [];
+
+			for (var a = 0, len = animation.length; a < len; a++) {
+
+					 tridata = earcut_repackage(animation[a])
+
+					 tridata = JSON.stringify(tridata)
+				   tridata = tridata.replace(/\[/g, '{').replace(/]/g, '}')
+				   tridata = tridata.replace(/\"/g, '').replace(/,/g, '')
+
+				   animation_repackage.push(tridata)
+				animation_repackage_str = animation_repackage.toString().replace(/,/g, '')
+			}
+
+
+
+		 $("#debugLUA").html($('#variable').val() + ' = strtovec("{'+animation_repackage_str+'}")');
+
+
+    $('html, body').animate({
+        scrollTop: $("#debugLUA").offset().top
+    }, 500);
+
+		 //console.log('vert '+ vertex_selected,'layers '+layer_selected,'mouse drag '+mouse_drag)
+		//console.log(earcut_repackage(layers))
+
+	// $('#debugLUA').trigger('openModal');
+
+
+
+
+	});
+
+	$( "#clearworkspace" ).click(function() {
+
+		var r = confirm("Clear all layers and frames?");
+		if (r == true) {
+
+		 animation =  [ //animation
+													[ //layers
+														[ //layer
+															8, 8,  //colours
+															32,32, //vertex
+															64,32, //vertex
+															64,64, //vertex
+															32,64  //vertex
+														]
+													]
+											]
+
+			layer_selected=0;
+			frame_selected=0;
+			vertex_selected = -1;
+			//localStorage.removeItem('workspace');
+			layers=animation[frame_selected];
+			layer=layers[layer_selected];
+			gui_update_layers();
+
+		}
+
+	});
+
+
+		// $(document).on('change', '.file-upload-button', function(event) {
+
+
+
+
+		// });
+
+
+	$( "#saveworkspace" ).click(function() {
+		var json_str = JSON.stringify(animation);
+
+		localStorage.setItem('workspace',json_str);
+		console.log('Workspace saved to browser storage... ',json_str)
+		alert("Saved data to local browser storage\n\nData will reload when you load the page again.");
+	});
+
+	$( "#loadworkspace" ).click(function() {
+		var temp_data = localStorage.getItem('workspace');
+		var animation = JSON.parse(temp_data);
+		console.log('Workspace loaded from browser storage... ')
+	});
+
+	$( "#DLworkspace" ).click(function() {
+		var json_str = JSON.stringify(animation);
+
+		var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(json_str);
+		var dlAnchorElem = document.getElementById('downloadAnchorElem');
+		dlAnchorElem.setAttribute("href", dataStr);
+		dlAnchorElem.setAttribute("download", "pico8-vector-animation.json");
+		dlAnchorElem.click();
+
+		console.log('Workspace file generated... ',json_str)
+	});
+
+	$( "#decode" ).click(function() {
+		var workspacejson = prompt("Workspace JSON", "");
+		if (workspacejson != null) {
+				frame_selected = 0; //reset selected frame
+				layer_selected = 0; //select bottom layer
+		    animation = JSON.parse(workspacejson)
+				layers = animation[frame_selected]; //get the first frame
+		    gui_update_layers();
+		}
+	});
+
+
+	function get_colour(pal,index) {
+		return pal[index];
+	}
+
+	function gui_update_layers(){
+
+		//first frames
+		$('#frames-row').empty();
+		for (i = 0; i < animation.length; i++) {
+			is_active = '';
+			if(i==frame_selected) { is_active = ' active'; }
+			var frame_vis=i+1
+			$( "#frames-row" ).append( '<div data-frames="'+i+'" class="frame-thumb '+is_active+'"><span data-frames="'+i+'" class="deleteframe glyphicon glyphicon-trash"></span><p>'+frame_vis+'</p></div>');
+
+		}
+
+		//we clicked to show the frame
+		$( ".frame-thumb" ).click(function(e) {
+			id = $( this ).data('frames');
+			console.log(id);
+			frame_selected = id; //pick this frame
+			layer_selected=0; //pick the bottom layer
+			layers = animation[frame_selected]; //extract this layer
+			gui_update_layers(); //update the gui
+		});
+
+		//clicked the little delete icon instead
+		$( ".deleteframe" ).click(function(e) {
+				e.stopPropagation();
+				if(animation.length>1) { //only delete when there are more then 1 frame
+					id = $( this ).data('frames');
+					console.log('delete frame',id);
+					animation_delete_frame(id);
+					frame_selected=0; //pick the bottom layer
+					layer_selected=0; //pick the bottom layer
+					layers = animation[frame_selected]; //extract this layer
+				}
+				gui_update_layers(); //update the gui anyway
+		});
+
+
+		$( "#frames-row" ).append( '<div class="frame-thumb-add"><span class="glyphicon glyphicon-plus"></span></div>');
+		$( ".frame-thumb-add" ).click(function() {
+			animation_add_frame()
+			//frame_selected = animation.length
+			gui_update_layers(); //update the gui
+		});
+
+		//now layers
+		$('#layers-list').empty();
+		animation[frame_selected] = layers;
+		for (i = 0; i < layers.length; i++) {
+			is_active = '';
+			if(i==layer_selected) { is_active = ' active'; }
+			$( "#layers-list" ).prepend( '<li data-layers="'+i+'" class="layers-picker list-group-item'+is_active+'">Layer '+i+'</li>');
+		}
+		$( ".layers-picker" ).click(function() {
+			id = $( this ).data('layers');
+			console.log(id);
+			layer_selected = id;
+			gui_update_layers();
+		});
+
+
+	}
+
+
+	function NewLayer(){
+			var new_layer=[ 8, 8, 32,32, 64,32, 64,64, 32,64 ];
+			layers.splice(layers.length, 0, new_layer);
+			layer_selected=layers.length-1; //select new layer
+	}
+	function Deletelayers(index){ //pass this in?
+		if (index > -1 ) {
+    	layers.splice(index, 1);
+		}
+	}
+	function layers_up() {
+		layer_selected=layer_selected+1;
+		if(layer_selected>layers.length-1) { layer_selected=layers.length-1; }
+		console.log('layer is '+layer_selected)
+	}
+	function layers_down() {
+		layer_selected=layer_selected-1;
+		if(layer_selected<0) { layer_selected=0; }
+	}
+	// function layers_duplicate() {
+	// 		new_layer=layers[layer_selected];
+	// 		layers.splice(layers.length, 0, new_layer);
+	// 		layer_selected=layers.length-1; //select new layer
+	// 		gui_update_layers();
+	// }
+	function layers_swap_up(layers, index) {
+		if(index<layers.length-1){
+			console.log('layer up')
+			var temp1 = layers[index];
+			var temp2 = layers[index+1];
+			layers[index+1] = temp1;
+			layers[index] = temp2;
+
+			layer_selected = layer_selected + 1
+			if(layer_selected>layers.length-1) { layer_selected=layers.length-1; }
+		}
+		return layers
+	}
+	function layers_swap_down(layers, index) {
+		if(index>0){
+			console.log('layers layers down')
+			var temp1 = layers[index];
+			var temp2 = layers[index-1];
+			layers[index-1] = temp1;
+			layers[index] = temp2;
+
+			layer_selected = layer_selected - 1
+			if(layer_selected<0) { layer_selected=1; }
+		}
+		return layers
+	}
+
+	function vertex_move(layer,vertex,new_x,new_y) {
+
+		layer[vertex] = new_x;
+		layer[vertex+1] = new_y;
+
+		return layer;
+	}
+
+	function vertex_move_all(layer,v_x,v_y) {
+
+		if(layer){
+
+			for( item=extra_data ; item < layer.length-1 ; item+=2 ){
+
+				layer[item] = layer[item] + v_x
+				layer[item+1] = layer[item+1] + v_y
+
+			}
+
+		}
+
+		return layer;
+	}
+
+
+
+	function vertex_delete(layer,index){
+		if (index > -1) {
+    	layer.splice(index, 2);
+		}
+		return layer
+	}
+
+
+	function vertex_add(layer,index,vert_x,vert_y){
+			layer.splice(index, 0, vert_x, vert_y);
+		return layer
+	}
+
+	var layer_selected = 0; //seelct second layers test
+	var frame_selected = 0;
+
+	var ONE_layers_TIME = 1000 / 30 ;
+	var mainloop = function() {
+			//_update() //game logic
+			_draw() //draw at 60fps
+	};
+	setInterval( mainloop, ONE_layers_TIME );
+	var c_width = 256;
+	var c_height = 256;
+	var x_offset = 128;
+	var Y_offset = 128;
+	var c_mult = 3;
+	var mouse_x = 0;
+	var mouse_y = 0;
+	var mouse_drag = false;
+	var bg_colour = 0;
+	var extra_data = 2;
+
+	var vertex_selected = -1;
+
+	alt_key_down = false;
+	shift_key_down = false;
+
+	show_guide = true;
+
+	//var temp_data = getCookie('workspace') ;
+if (localStorage.getItem("workspace") === null) {
+
+		//default shape
+		var animation =  [ //animation
+													[ //layers
+														[ //layer
+															8, 8,  //colours
+															32,32, //vertex
+															64,32, //vertex
+															64,64, //vertex
+															32,64  //vertex
+														]
+													]
+											]
+
+} else {
+	var temp_data = localStorage.getItem('workspace');
+	var animation = JSON.parse(temp_data);
+}
+
+
+	var layers = animation[frame_selected]; //get the first frame
+	var anim_length = animation.length-1;
+
+	//animation_change_frame(0)
+
+	gui_update_layers(); //setup gui
+
+	//input
+	window.addEventListener("keydown", keydown, false);
+	window.addEventListener("keyup", keyup, false);
+
+
+
+	function animation_add_frame() {
+		animation.push( [ //layers
+											[ //layer
+												8, 8,  //colours
+												32,32, //vertex
+												64,32, //vertex
+												64,64, //vertex
+												32,64  //vertex
+											]
+										] )
+
+		//layers = animation[animation.length]; //get the first frame
+	}
+
+	function animation_delete_frame(index) {
+	  	animation.splice(index, 1);
+	}
+
+	function animation_change_frame(requested_frame) {
+		//quick range check for valid frame
+		if( requested_frame >= 0 && requested_frame < animation.length ){
+			frame_selected = requested_frame; //set the frame
+			return animation[frame_selected]; //return the current frame data
+		}
+	}
+
+	function keydown(evt) {
+	   	const keyName = event.key;
+	    if (keyName=='Alt') {
+				console.log('alt-down');
+				alt_key_down = true;
+	    }
+			if(keyName=='Control') {
+				console.log('ctrl-down');
+				ctrl_key_down = true;
+			}
+			if(keyName=='Shift') {
+				console.log('shift-down');
+				shift_key_down = true;
+			}
+
+	}
+
+
+	// function keydown(event) {
+	//   if (event.key == 'z') {
+	//   	console.log(imageObj);
+	//   }
+	// }
+	function keyup(evt) {
+   	const keyName = event.key;
+
+
+   //		/* quick slect frames */
+ 		// if(animation){
+   //		if (evt.keyCode == '49') { frame_selected = 0; console.log('frame 1'); } //there is always 1 frame
+   //		if (evt.keyCode == '50') { if(animation.length<2){ frame_selected = 1; console.log('frame 2'); }  } //frame 2
+   //		if (evt.keyCode == '51') { if(animation.length<3){ frame_selected = 2; console.log('frame 3'); } } //frame 3
+   //		if (evt.keyCode == '52') { if(animation.length<4){ frame_selected = 3; console.log('frame 4'); } } //frame 4
+   //		if (evt.keyCode == '53') { if(animation.length<5){ frame_selected = 4; console.log('frame 5'); } } //frame 5
+   //		if (evt.keyCode == '54') { if(animation.length<6){ frame_selected = 5; console.log('frame 6'); } } //frame 6
+   //		if (evt.keyCode == '55') { if(animation.length<7){ frame_selected = 6; console.log('frame 7'); } } //frame 7
+   //		if (evt.keyCode == '56') { if(animation.length<8){ frame_selected = 7; console.log('frame 8'); } } //frame 7
+   //		layers = animation[frame_selected];
+   //		layer_selected = 0;
+   //		layer = layers[layer_selected];
+ 		// }
+
+
+
+    if(animation && layer){ //just making sure we have an animation and a layer array to avoid errors
+
+			temp_x = layer[vertex_selected]
+			temp_y = layer[vertex_selected+1]
+
+   		if(shift_key_down) { move_amt = 8; } else { move_amt = 1; }
+
+   		if (evt.keyCode == '27') {
+   			//escape
+   			vertex_selected = -1
+
+   		}
+
+	    if (evt.keyCode == '38') {
+					layer = layers[layer_selected];
+					if(vertex_selected != -1){ //move single vertex
+						layer = vertex_move(layer,vertex_selected,temp_x,temp_y-move_amt)
+					} else { //move all of them
+						layer = vertex_move_all(layer,0,-move_amt)
+					}
+	    }
+	    else if (evt.keyCode == '40') {
+					layer = layers[layer_selected];
+					if(vertex_selected != -1){ //move single vertex
+						layer = vertex_move(layer,vertex_selected,temp_x,temp_y+move_amt)
+					} else { //move all of them
+						layer = vertex_move_all(layer,0,move_amt)
+					}
+	    }
+	    else if (evt.keyCode == '37') {
+					layer = layers[layer_selected];
+					if(vertex_selected != -1){ //move single vertex
+						layer = vertex_move(layer,vertex_selected,temp_x-move_amt,temp_y)
+					} else { //move all of them
+						layer = vertex_move_all(layer,-move_amt,0)
+					}
+	    }
+	    else if (evt.keyCode == '39') {
+					layer = layers[layer_selected];
+					if(vertex_selected != -1){ //move single vertex
+						layer = vertex_move(layer,vertex_selected,temp_x+move_amt,temp_y)
+					} else { //move all of them
+						layer = vertex_move_all(layer,move_amt,0)
+					}
+	    }
+
+    }
+
+
+	    if (keyName=='Alt') {
+				console.log('alt-up');
+				alt_key_down = false;
+	    }
+			if(keyName=='Control') {
+				console.log('ctrl-up');
+				ctrl_key_down = false;
+			}
+			if(keyName=='Shift') {
+				console.log('shift-up');
+				shift_key_down = false;
+			}
+
+
+
+		if (keyName == 'g') {
+			show_guide = !show_guide
+			console.log('Guide is '+show_guide)
+	  }
+
+
+		if (keyName == '[') {
+			layers_down()
+	  }
+	  else if (keyName == ']') {
+			layers_up()
+	  }
+		if (keyName == '-') {
+
+				layer_selected=0;
+				frame_selected-=1;
+				if(frame_selected<0){ frame_selected=0; }
+
+				layers = animation[frame_selected]; //get the first frame
+		    gui_update_layers();
+
+
+			// layer=layers[layer_selected]; //get this layer
+			// layer = vertex_delete( layer, vertex_selected ); //remove vertex
+			// layers[layer_selected] = layer //put the layer back
+			// console.log('vertex deleted '+vertex_selected)
+		}
+		if (keyName == '=') {
+			console.log('frame up')
+
+				layer_selected=0;
+				frame_selected+=1;
+				//console.log(anim_length);
+
+				if(frame_selected>=animation.length-1){
+					frame_selected=animation.length-1;
+				}
+
+				layers = animation[frame_selected]; //get the first frame
+		    gui_update_layers();
+
+
+			// layer=layers[layer_selected]; //get this layer
+			// vx = layer[vertex_selected]
+			// vy = layer[vertex_selected+1]
+
+			// //this isnt very good and needs to be re-done somehow
+			// layer = vertex_add( layer, vertex_selected ,vx+10,vy+10); //add vertex to layer
+
+			// layers[layer_selected] = layer //put the layer back into layers
+			// console.log('vertex added '+vertex_selected,vx,vy)
+		}
+		if (keyName == '.') {
+			layers = layers_swap_up(layers, layer_selected)
+		}
+		if (keyName == ',') {
+			layers = layers_swap_down(layers, layer_selected)
+		}
+
+		gui_update_layers(); //update gui on every keypress to be sure.
+	}
+
+
+
+
+
+//this is for pasting an image do trace
+	var PastedImage = 'default_background.png';
+	window.imageObj = new Image();
+	var ImageReady = false;
+	imageObj.onload = function() {
+		ImageReady = true;
+	};
+	imageObj.src = PastedImage;
+
+
+	var GuideImagePng = 'pico8-guide.png';
+	window.imageGuide = new Image();
+	var GuideImageReady = false;
+	imageGuide.onload = function() {
+		GuideImageReady = true;
+	};
+	imageGuide.src = GuideImagePng;
+
+
+
+
+
+
+//main canvas code
+	var canvas=document.getElementById("canvas")
+	canvas.width = c_width;
+	canvas.height = c_height;
+	canvas.style.width = (c_width*c_mult)+'px';
+	canvas.style.height = (c_height*c_mult)+'px';
+	var ctx = canvas.getContext('2d');
+
+		//set up lines pattern
+		var linepattern = document.createElement('canvas');
+		linepattern.width = 256; //full canvas
+		linepattern.height = 2; //2 pixel high, one for each colour
+		var scanlines = linepattern.getContext('2d');
+
+		//set up background squares
+		var grid = document.createElement('canvas');
+		grid.width = 16;
+		grid.height = 16;
+		var gridctx = grid.getContext('2d');
+		gridctx.fillStyle = palette[1]; //same all the time so no need to change
+		gridctx.fillRect(0,0,8,8); //8x8 squares
+		gridctx.fillRect(8,8,8,8);
+
+//set the mouse position for other functions to use
+	function getMousePos(canvas, evt) {
+		var rect = canvas.getBoundingClientRect();
+		mouse_x = Math.floor((evt.clientX - rect.left)/c_mult);
+		mouse_y = Math.floor((evt.clientY - rect.top)/c_mult);
+		return {
+			x: Math.floor((evt.clientX - rect.left)/c_mult),
+			y: Math.floor((evt.clientY - rect.top)/c_mult)
+		};
+	}
+
+	//on mouse move call this function
+	canvas.addEventListener('mousemove', function(evt) {
+		var mousePos = getMousePos(canvas, evt);
+	}, false);
+
+	//when the mouse is down do this
+	canvas.addEventListener('mousedown', function(evt) {
+		//var mousePos = getMousePos(canvas, evt);
+		if(alt_key_down==false&&shift_key_down==false){ mouse_drag = true; } //only drag if no modifier keys
+		if(alt_key_down==true){
+      if( line_selected != -1){
+		      layer=layers[layer_selected]; //get this layer
+					layer = vertex_add( layer, line_selected + 2 ,mouse_x,mouse_y); //add vertex to layer
+        	console.log('vertex added')
+        }
+		}
+		if(shift_key_down==true){
+      if( line_selected != -1){
+		      layer = layers[layer_selected]; //get this layer
+					layer = vertex_delete( layer, vertex_selected); //delete this vertex
+        	console.log('vertex removed')
+        }
+		}
+	}, false);
+
+	//when the mouse comes back up do this
+	canvas.addEventListener('mouseup', function(evt) {
+		//var mousePos = getMousePos(canvas, evt);
+		mouse_drag = false;
+	}, false);
+
+	function debug_data() {
+		$('#debugdata').html(
+			'<pre>'+
+			'DEBUG:<br>'+
+			'vert selected: '+vertex_selected+'<br>'+
+			'line selected: '+line_selected+'<br>'+
+			'frame selected: '+frame_selected+'<br>'+
+
+			'mouse_x: '+mouse_x+'<br>'+
+			'mouse_y: '+mouse_y+'<br>'+
+			'</pre>'
+
+		)
+
+	}
+
+	function _update(){
+
+	}
+
+	function _draw(){
+		//debug_data();
+
+		ctx.globalAlpha = 1; //alpha back to normal
+
+		//background grid 8x8 squares
+			ctx.fillStyle = get_colour(palette,bg_colour); //big black background square
+			ctx.fillRect(0,0,c_width,c_height); //draw black background
+			if(show_guide){
+			ctx.fillStyle = ctx.createPattern(grid, "repeat"); //fill with grid pattern
+			ctx.fillRect(0,0,c_width,c_height); //draw patterend square
+			}
+
+		for (i = 0; i < layers.length; i++) { //for each layers
+			layer=layers[i];
+
+			//alternating coloud line setup
+			scanlines.fillStyle = get_colour(palette,layer[0]);
+			scanlines.fillRect(0,0,256,1);
+			scanlines.fillStyle = get_colour(palette,layer[1]);
+			scanlines.fillRect(1,1,256,1);
+
+			//ctx.fillStyle = get_colour(palette,layer[0]); //scanlines
+			ctx.fillStyle = ctx.createPattern(linepattern, "repeat")
+			ctx.lineWidth=0.5;
+			ctx.strokeStyle = '#000000';
+
+			for (a = 0; a < 10; a++) { //fake pixel lines
+				ctx.beginPath();
+				ctx.moveTo(layer[extra_data], layer[extra_data+1]);
+				if(layer){
+					for( item=extra_data ; item < layer.length-1 ; item+=2 ){
+						ctx.lineTo( layer[item] , layer[item+1] )
+					}
+					ctx.closePath();
+					ctx.fill();
+					if(layer_selected==i) {
+						ctx.stroke();
+					}
+				}
+			}
+
+		}
+
+
+		//dragging a vertex no modifier
+		if(mouse_drag && vertex_selected != -1 && alt_key_down == false) {
+			layer = layers[layer_selected];
+			layer = vertex_move(layer,vertex_selected,mouse_x,mouse_y)
+		}
+
+		// draw a showy line when i hold alt
+		if(alt_key_down && line_selected != -1){
+			//ctx.dashedLine(100, 100, 200, 200, 3,"#fff");
+		}
+
+		layers=animation[frame_selected];
+		layer=layers[layer_selected];
+		//console.log(layers)
+		//hovering the lines selects the vertex previous for adding a new vertex with alt
+		vertex_picked=false
+		if(layer){
+			for( item=extra_data ; item < layer.length-1 ; item+=2 ){
+
+			vrt_x = layer[item]
+			vrt_y = layer[item+1]
+
+			if(item < layer.length && alt_key_down==true){
+				vrt_x_next = layer[item+2]
+				vrt_y_next = layer[item+3]
+
+				var a=[],b=[],c=[];
+				a.x=vrt_x;
+				a.y=vrt_y;
+				b.x=vrt_x_next;
+				b.y=vrt_y_next;
+				c.x=mouse_x;
+				c.y=mouse_y;
+
+				if( isBetween( a, b, c, hover_tolerance) == true && vertex_picked==false){
+					line_selected=item
+					vertex_selected = item+2;
+					vertex_picked=true
+				}
+			}
+
+
+			var buffer = 3;
+			if( mouse_x>vrt_x-buffer &&
+				  mouse_x<vrt_x+buffer &&
+					mouse_y>vrt_y-buffer &&
+					mouse_y<vrt_y+buffer
+				) {
+				ctx.fillStyle = '#00ffff'; //light blue
+
+				if(mouse_drag==false){
+					vertex_selected = item
+				}
+
+			} else {
+				ctx.fillStyle = '#0000ff'; //blue
+			}
+
+			if(item==vertex_selected){
+				ctx.fillStyle = '#00ff00'; //green
+			}
+
+			ctx.fillRect(vrt_x-2, vrt_y-2, 4, 4 );
+
+			/*
+			//some debug rubbish
+			if(show_guide){
+				ctx.font = "9px Arial";
+				ctx.fillStyle = '#ffffff'; //white
+				ctx.fillText(item+"/"+vrt_x+"/"+vrt_y,vrt_x-16,vrt_y-4);
+			}
+			*/
+
+		}
+		}
+
+		ctx.globalAlpha = 0.4; //semi-transparent
+		if(ImageReady){ //draw image when ready
+				ctx.drawImage(imageObj, 0, 0);
+			}
+
+
+		if(GuideImageReady && show_guide){ //draw image when ready
+				ctx.drawImage(imageGuide, 0, 0);
+			}
+
+	}
+
+
+});
+
+
+var CLIPBOARD = new CLIPBOARD_CLASS("canvas", false);
+
+function CLIPBOARD_CLASS(canvas_id, autoresize) {
+	var _self = this;
+	var canvas = document.getElementById(canvas_id);
+	var ctx = document.getElementById(canvas_id).getContext("2d");
+
+	//handlers
+	document.addEventListener('paste', function (e) { _self.paste_auto(e); }, false);
+
+	//on paste
+	this.paste_auto = function (e) {
+		if (e.clipboardData) {
+			var items = e.clipboardData.items;
+			if (!items) return;
+
+			//access data directly
+			for (var i = 0; i < items.length; i++) {
+				if (items[i].type.indexOf("image") !== -1) {
+					//image
+					var blob = items[i].getAsFile();
+					var URLObj = window.URL || window.webkitURL;
+					var source = URLObj.createObjectURL(blob);
+					//this.paste_createImage(source);
+
+					imageObj = new Image();
+					ImageReady = false;
+					imageObj.onload = function() {
+					 	ImageReady = true;
+						//console.log(imageObj);
+					 };
+					imageObj.src = source;
+
+				}
+			}
+			e.preventDefault();
+		}
+	};
+	//draw pasted image to canvas
+	this.paste_createImage = function (source) {
+		var pastedImage = new Image();
+		pastedImage.onload = function () {
+			ImageReady = true;
+			//if(autoresize == true){
+				//resize
+			//	canvas.width = pastedImage.width;
+			//	canvas.height = pastedImage.height;
+			//}
+			//else{
+				//clear canvas
+				//ctx.clearRect(0, 0, canvas.width, canvas.height);
+			//}
+			//ctx.globalAlpha = 1;
+			//ctx.drawImage(pastedImage, 0, 0);
+		};
+		pastedImage.src = source;
+	};
+}
+
+
+//loading json from disk
+// function readFiles(event) {
+//     var fileList = event.target.files;
+
+//     for(var i=0; i < fileList.length; i++ ) {
+//         loadAsText(fileList[i]);
+//     }
+// }
+
+// function loadAsText(theFile) {
+//     var reader = new FileReader();
+
+//     reader.onload = function(loadedEvent) {
+//         // result contains loaded file.
+//         //console.log(loadedEvent.target.result);
+//         workspacejson = loadedEvent.target.result
+// 				if (workspacejson != null) {
+// 						frame_selected = 0; //reset selected frame
+// 						layer_selected = 0; //select bottom layer
+// 				    animation = JSON.parse(workspacejson)
+// 						layers = animation[frame_selected]; //get the first frame
+// 				    gui_update_layers();
+// 				}
+
+//     }
+//     reader.readAsText(theFile);
+// }
+
+
+
+</script>
+
+<style>
+
+
+@font-face {
+	font-family: 'PICO-8 mono';
+	src: url(data:font/truetype;charset=utf-8;base64,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AAAhESERAREhGQIhEQQABAD4AAQABAAEAPwABAAMAPQADAAEAPwAAAADBAAAAAwAFAAAAwAHAAsAACERIRkCIREBESERBAAEAAQA+AAEAAQA/AAEAAwA9AAMAAQA/AAAAAUAAAAADAAUAAADAAcAEwAXABsAADERIREhESERAREhESERIREhESERAREhESERIREEAAQABAD4APwABAAEAAQA/AD4AAQABAAEAAQA/AAEAPwABAAEAAQABAD8APwA/AAMAAQA/AAEAPwAAAEAAAQADAAQAAALAAABESERIREhESERIREEAPwABAAEAAQA/AAEAAQABAAEAPwA/AD8AAACAAAAAAgACAAAAwAHAAAxESEZAiERBAAEAAQA/AAEAAQA/AAAAAAAAQAACAAMAAwAAAMAABkBIREMAAgABAD8AAAAAAEEAAAACAAEAAADAAAhESERBAAEAAQA/AAAAAADAAAAAAwAFAAAAwAHAAsAADERIRkCIRkCIREEAAQABAAEAPwABAAMAPQADAAEAPwAAAAAAgAAAAAMABQAAAMABwAAAREhEQERIREIAPwA/AAMAAQADAD0APwAFADsAAABAAAAAAwAFAAACQAAMREhESERIREhEQQA/AAIAAQABAAMAAQA8AD8AAAAAAEAAAAADAAUAAALAAAxESERIREhESERIREIAPgADAD4AAgADAAEAAQA9AD8APwAAAEAAAAADAAUAAALAAAxESERIREhESERIREIAPwABAD4AAwABAAEAAQABAAEAOwAAAEAAAAADAAUAAAJAAAhESERIREhESERCAD4AAQABAAEAAgADAD4AAgA7AAAAQAAAAAMABQAAAsAADERIREhESERIREhEQgA+AAMAPgACAAEAAQADAD8APwA9AAAAgAAAAAMABQAAAMACQAAAREhEQERIREhEQgA/AD8AAQACAAEAAQA/AD8ABQA+AD0AAAAAAEAAAAADAAUAAAFAAAhESERIREIAPgADAAQAAQA7AAAAwAAAAAMABQAAAMABwALAAABESERAREhEQERIREIAPwABAD8APwADAAEAAQA/AAIAAQA/AD0ABQA7AAAAgAAAAAMABQAAAMACQAAAREhEQERIREhEQgA/AAEAPgADAAMAAQA/AD0AAgADADsAAAAAAIEAAQACAAQAAADAAcAAAERIREBESERBAAEAPwABAAEAAQA/AAIAAQA/AAAAwAAAAAIABAAAAMABwALAAAxESEZAiERAREhEQQABAD8AAQABAD8AAQABAD8AAgABAD8AAAAAAAFAAAAAAwAFAAAAwAHAAsADwATAAAhESERAREhEQERIRkCIRkCIREIAAQA+AAEAPgABAAEAAQABAD8AAQABAD8AAQABAD8AAQABAD8AAQABAD8AAACAAAEAAwAEAAAAwAHAAAZASERAREhEQwA9AAMAAQABAD8AAgABAD8AAAAAAUAAAAADAAUAAADAAcACwAPABMAADERIRkCIRkCIREBESERAREhEQQABAAEAPgABAD4AAQABAD8AAQABAD8AAQABAD8AAQABAD8AAQABAD8AAAAAAIAAAAADAAUAAADAAsAACERIREBESERIREhEQQABAD8AAQA+AAMAAQA/AAIAAQABAAEAPQAAAAABAAAAAAMABQAAAMABwALAA8AACERIREBESERAREhEQERIREEAAgA9AAEAAQABAD4AAQABAD8AAQADAD0AAQACAD4AAgABAD8AAAAAAIAAAAADAAUAAADAAsAAAERIREBESERIREhEQgA/AD8AAwA/AD8AAwABAD8APQAFADsAAgA+AAAAQAAAAAMABQAAA8AADERIREhESERIREhESERIREMAPwA/AAEAPwABAAEABQA+AAEAPwA/AD8AAQA+AAAAwAAAAAMABQAAAMABwALAAAhESERAREhGQIhEQQACAD0AAQACAAEAPwABAAMAPQADAAEAPwAAAABAAAAAAwAFAAACQAAMREhESERIREhEQgA/AAEAAQAFAD8APQADADwAAAAAAEAAAAADAAUAAALAAAxESERIREhESERIREMAPgABAD8AAgAFAD8APwA/AD8APwAAAEAAAAADAAUAAAJAAAxESERIREhESERDAD4AAQA/AAUAPwA/AD8APgAAAAAAgAAAAAMABQAAAcACwAAMREhESERIREBESERBAAEAAQA+AAIABAA9AAEAPgAEAAEAPwAAAEAAAAADAAUAAALAAAxESERIREhESERIREEAAQABAD8APwAFAD4AAgA7AAIAPgAAAEAAAAADAAUAAALAAAxESERIREhESERIREEAPwADAD8AAQABAAMAAQA/AD0APwAAAEAAAAADAAUAAAJAAAxESERIREhESERBAD8AAwA/AAEAAwABAD8APAAAAAAAwAAAAAMABQAAAMACwAPAAAhESERIREhESERIREBESERCAAEAPQABAAEAPwABAAEAAgA+AAUAPgA/AD4AAwACAD4AAABAAAAAAwAFAAABQAAMREhESERBAAIABQA8AD8AAAAAAEAAAAADAAUAAAHAAAxESERIREhEQwA/AD8ABQA7AAMAPQAAAIAAAAADAAUAAADAAkAACERIREhESERIREIAAQA9AAIAPwAEADwABQA/ADwAAAAAAIAAAAADAAUAAAFAAsAADERIREhGQIhESERBAAEAPwACAAQAPQA/AAEAAwABADwAAAAAAACAAAAAAwAFAAAAwAJAAABESERAREhESERCAD8APwADAD4AAwABAD8APQAFAD0APgAAAAAAwAAAAAMABQAAAkADQARAAAhESERIREhESERAREhEQERIREEAPwABAAEAAQA/AAEAPgABAAEAAwA+AD8APwACAAIAPgACAAEAPwAAAIAAAAADAAUAAADAA8AACERIREhESERIREhESERIREIAAQA9AAMAPwA/AAEAPwACAD4ABQA+AAEAPwA/AD4AAADAAAAAAwAFAAAAwALAA8AADERIRkCIREhESERAREhEQgA+AAEAAgA+AAIAAQA/AAEAAQACAD8APgADAAEAPwAAAAAAAEAAAAADAAUAAAHAAAhESERIREhEQQA/AAMAPwAEAAEAPwA8AAAAAACAAAAAAwAFAAAAwAJAAAZASEZAiERIREEAAQABAAEABAA8AD8AAQAEADsAAAAAAABAAAAAAwAFAAACwAAIREhESERIREhESERBAD8AAQABAAEAPwABAAQAPQADADwAPwAAAAAAQAAAAAMABQAAAcAADERIREhESERBAAEAAQAFAD0AAwA7AAABQAAAAAMABQAAAMABwALAA8AEwAAMREhESERIREBESERAREhESERIREEAAQABAD4AAQA+AAEAAQABAAIAPgACAD4AAgABAD8AAQACAD4AAgA+AAAAQAAAAAMABQAAAsAADERIREhESERIREhEQgA+AAEAAQABAAEAAQADAD4AAgA7AAAAwAAAAAMABQAAAUACQAPAAAxESERIREBESEZAiERIREEAAgA+AAEAPgADAAIAPwA/AAIAAQA/AAEAAQABAD4AAAAAAABAAAAAAgAFAAABwAAMREhESERIREIAPwABAAUAPwA9AD8AAADAAAAAAwAFAAAAwAHAAsAACERIREBESERAREhEQgABAD4AAQA+AAEAAQA/AAEAAwA9AAMAAQA/AAAAAABBAAAAAwAFAAABwAAIREhESERIREEAAQA/AAIAAQADAAEAOwAAAAAAwAADAAMABQAAAMABwALAAAZASERIREhEQERIREEAAQABAD4AAQADAAEAPwABAD8AAQABAD8AAABAAAAAAwABAAAAwAAMREhEQwABAD8AAACBAAMAAwAFAAAAwAHAAABESERAREhEQgABAD4AAQADAAEAPwABAAEAPwAAAIAAAAADAAQAAADAAsAAAERIREBESERIREhEQgA/AD8AAwA/AD8AAgABAD8APgAEADwAAQA/AAAAQAAAAAMABAAAAkAADERIREhESERIREIAPwABAAEABAA+AD8AAQA+AAAAAABAAAAAAwAEAAABwAAMREhESERIREMAPgACAAQAPwA+AD8AAACAAAAAAwAEAAAAwALAAABESERAREhESERIREIAAQA9AAIAPwABAAEAAgA+AD8ABAA/AD4APwAAAEAAAAADAAQAAAJAAAxESERIREhESERDAD8APwACAAQAPwA/AD8APwAAAAAAQAAAAAMABAAAAcAADERIREhESERDAD8APwAEAD8APwA+AAAAQAAAAAMABAAAAkAADERIREhESERIREMAPgABAAEABAA/AD4AAQA+AAAAAABAAAAAAwAEAAACwAAMREhESERIREhESERBAAEAAQA/AD8ABAA+AAIAPAABAD8AAABAAAAAAwAEAAACwAAMREhESERIREhESERBAD8AAwA/AAEAAQACAAEAPwA+AD8AAABAAAAAAwAEAAACQAAMREhESERIREhEQQA/AAMAPwABAAIAAQA/AD0AAAAAAMAAAAADAAQAAADAAsADwAAIREhESERIREhESERAREhEQgABAD0AAQABAD8AAQABAAIAPgAEAD8APwA+AAMAAQA/AAAAQAAAAAMABAAAAUAADERIREhEQQACAAQAPQA/AAAAAABAAAAAAwAEAAABwAAMREhESERIREMAPwA/AAQAPAACAD4AAACAAAAAAwAEAAAAwAJAAAhESERIREhESERCAAEAPQACAD8AAwA9AAQAPwA9AAAAAACAAAAAAwAEAAABQALAAAxESERIRkCIREhEQQABAD8AAgADAD4APwABAAIAAQA9AAAAAAAAgAAAAAMABAAAAMACQAAAREhEQERIREhEQgA/AD8AAwA+AAIAAQA/AD4ABAA9AD8AAAAAAMAAAAADAAQAAAJAA0AEQAAIREhESERIREhEQERIREBESERBAD8AAQABAAEAPwABAD4AAQABAAIAPwA/AD8AAgABAD8AAQABAD8AAACAAAAAAwAEAAAAwAPAAAhESERIREhESERIREhESERCAAEAPQADAD8APwABAD8AAQA/AAQAPgABAD8APwA/AAABAAAAAAMABAAAAMABwALAA8AADERIRkCIREBESEZAiERCAAEAPQABAAIAAQA/AAEAAQA/AAEAAQA/AAEAAQA/AAAAAABAAAAAAwAEAAABwAAIREhESERIREEAPwADAD8AAwABAD8APQAAAAAAgAAAAAMABAAAAMACQAAGQEhGQIhESERBAAEAAQABAAMAPQA/AAEAAwA8AAAAAAAAQAAAAAMABAAAAsAACERIREhESERIREhEQQA/AAEAAQABAD8AAQADAD4AAgA9AD8AAAAAAEAAAAADAAQAAAHAAAxESERIREhEQQABAAEABAA+AAIAPAAAAUAAAAADAAQAAADAAcACwAPABMAADERIREhESERAREhEQERIREhESERBAAEAAQA+AAEAPgABAAEAAQACAD4AAgA+AAIAAQA/AAEAAQA/AAEAPwAAAEAAAAADAAQAAALAAAxESERIREhESERIREIAPgABAAEAAQABAAEAAgA/AAEAPAAAAIAAAAADAAQAAAFAAsAADERIREhEQERIREhEQQACAD8APgADAAIAPwA/AAIAAQABAD4AAABAAAAAAwAFAAACwAAIREhESERIREhESERBAD8AAQACAD8AAQACAAEAAgA/AD0APwAAAAAAQQAAAAIABQAAAMAACERIREEAAQAFADsAAAAAAEAAAAADAAUAAALAAAxESERIREhESERIREEAPwACAAEAPwABAAMAAQA+AD8APgAAAEAAAQADAAQAAAHAAAZASERIREhEQgABAD4AAQACAAEAPgA/AAAAAACAAAAAAwAEAAABwALAAAxESERIREhEQERIREEAAQABAD4AAQADAD4AAgA9AAMAAQA/AAAAAAeAW4AAQAAAAAAAACKARYAAQAAAAAAAQALAbkAAQAAAAAAAgAHAdUAAQAAAAAAAwAWAgsAAQAAAAAABAATAkoAAQAAAAAABQALAnYAAQAAAAAABgALApoAAQAAAAAABwA8AyAAAQAAAAAACAAWA4sAAQAAAAAACQAKA7gAAQAAAAAACgCYBPUAAQAAAAAADAA6BgQAAQAAAAAADQAtBpsAAQAAAAAADgAxBy0AAQAAAAAAEwApB7MAAwABBAkAAAEUAAAAAwABBAkAAQAWAaEAAwABBAkAAgAOAcUAAwABBAkAAwAsAd0AAwABBAkABAAmAiIAAwABBAkABQAWAl4AAwABBAkABgAWAoIAAwABBAkABwB4AqYAAwABBAkACAAsA10AAwABBAkACQAUA6IAAwABBAkACgEwA8MAAwABBAkADAB0BY4AAwABBAkADQBaBj8AAwABBAkADgBiBskAAwABBAkAEwBSB18AQwBvAHAAeQByAGkAZwBoAHQAIABSAGgAeQB0AGgAbQBMAHkAbgB4ACAAMgAwADEANgAKIBwAUABJAEMATwAtADgAIABtAG8AbgBvIB0AIABpAHMAIABiAGEAcwBlAGQAIABvAG4AICAcAFAASQBDAE8ALQA4IB0AIABiAHkAICAcAFIAaAB5AHQAaABtAEwAeQBuAHggHQAgACgAaAB0AHQAcAA6AC8ALwBmAG8AbgB0AHMAdAByAHUAYwB0AC4AYwBvAG0ALwBmAG8AbgB0AHMAdAByAHUAYwB0AG8AcgBzAC8AcwBoAG8AdwAvADEAMwAwADIANAAxADgALwByAGgAeQB0AGgAbQBsAHkAbgB4ACkAAENvcHlyaWdodCBSaHl0aG1MeW54IDIwMTYK0lBJQ08tOCBtb25v0yBpcyBiYXNlZCBvbiDSUElDTy040yBieSDSUmh5dGhtTHlueNMgKGh0dHA6Ly9mb250c3RydWN0LmNvbS9mb250c3RydWN0b3JzL3Nob3cvMTMwMjQxOC9yaHl0aG1seW54KQAAUABJAEMATwAtADgAIABtAG8AbgBvAABQSUNPLTggbW9ubwAAUgBlAGcAdQBsAGEAcgAAUmVndWxhcgAARgBvAG4AdABTAHQAcgB1AGMAdAAgAFAASQBDAE8ALQA4ACAAbQBvAG4AbwAARm9udFN0cnVjdCBQSUNPLTggbW9ubwAAUABJAEMATwAtADgAIABtAG8AbgBvACAAUgBlAGcAdQBsAGEAcgAAUElDTy04IG1vbm8gUmVndWxhcgAAVgBlAHIAcwBpAG8AbgAgADEALgAwAABWZXJzaW9uIDEuMAAAUABJAEMATwAtADgALQBtAG8AbgBvAABQSUNPLTgtbW9ubwAARgBvAG4AdABTAHQAcgB1AGMAdAAgAGkAcwAgAGEAIAB0AHIAYQBkAGUAbQBhAHIAawAgAG8AZgAgAEYAUwBJACAARgBvAG4AdABTAGgAbwBwACAASQBuAHQAZQByAG4AYQB0AGkAbwBuAGEAbAAgAEcAbQBiAEgAAEZvbnRTdHJ1Y3QgaXMgYSB0cmFkZW1hcmsgb2YgRlNJIEZvbnRTaG9wIEludGVybmF0aW9uYWwgR21iSAAAaAB0AHQAcAA6AC8ALwBmAG8AbgB0AHMAdAByAHUAYwB0AC4AYwBvAG0ALwAAaHR0cDovL2ZvbnRzdHJ1Y3QuY29tLwAAUgBoAHkAdABoAG0ATAB5AG4AeAAAUmh5dGhtTHlueAAgHABQAEkAQwBPAC0AOAAgAG0AbwBuAG8gHQAgAHcAYQBzACAAYgB1AGkAbAB0ACAAdwBpAHQAaAAgAEYAbwBuAHQAUwB0AHIAdQBjAHQACiAcAFAASQBDAE8ALQA4ACAAbQBvAG4AbyAdACAAaQBzACAAYgBhAHMAZQBkACAAbwBuACAgHABQAEkAQwBPAC0AOCAdACAAYgB5ACAgHABSAGgAeQB0AGgAbQBMAHkAbgB4IB0AIAAoAGgAdAB0AHAAOgAvAC8AZgBvAG4AdABzAHQAcgB1AGMAdAAuAGMAbwBtAC8AZgBvAG4AdABzAHQAcgB1AGMAdABvAHIAcwAvAHMAaABvAHcALwAxADMAMAAyADQAMQA4AC8AcgBoAHkAdABoAG0AbAB5AG4AeAApAADSUElDTy04IG1vbm/TIHdhcyBidWlsdCB3aXRoIEZvbnRTdHJ1Y3QK0lBJQ08tOCBtb25v0yBpcyBiYXNlZCBvbiDSUElDTy040yBieSDSUmh5dGhtTHlueNMgKGh0dHA6Ly9mb250c3RydWN0LmNvbS9mb250c3RydWN0b3JzL3Nob3cvMTMwMjQxOC9yaHl0aG1seW54KQAAaAB0AHQAcAA6AC8ALwBmAG8AbgB0AHMAdAByAHUAYwB0AC4AYwBvAG0ALwBmAG8AbgB0AHMAdAByAHUAYwB0AGkAbwBuAHMALwBzAGgAbwB3AC8AMQAzADQAMAAzADMANwAvAHAAaQBjAG8ALQA4AC0ANAAAaHR0cDovL2ZvbnRzdHJ1Y3QuY29tL2ZvbnRzdHJ1Y3Rpb25zL3Nob3cvMTM0MDMzNy9waWNvLTgtNAAAQwByAGUAYQB0AGkAdgBlACAAQwBvAG0AbQBvAG4AcwAgAEMAQwAwACAAUAB1AGIAbABpAGMAIABEAG8AbQBhAGkAbgAgAEQAZQBkAGkAYwBhAHQAaQBvAG4AAENyZWF0aXZlIENvbW1vbnMgQ0MwIFB1YmxpYyBEb21haW4gRGVkaWNhdGlvbgAAaAB0AHQAcAA6AC8ALwBjAHIAZQBhAHQAaQB2AGUAYwBvAG0AbQBvAG4AcwAuAG8AcgBnAC8AcAB1AGIAbABpAGMAZABvAG0AYQBpAG4ALwB6AGUAcgBvAC8AMQAuADAALwAAaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvcHVibGljZG9tYWluL3plcm8vMS4wLwAARgBpAHYAZQAgAGIAaQBnACAAcQB1AGEAYwBrAGkAbgBnACAAegBlAHAAaAB5AHIAcwAgAGoAbwBsAHQAIABtAHkAIAB3AGEAeAAgAGIAZQBkAABGaXZlIGJpZyBxdWFja2luZyB6ZXBoeXJzIGpvbHQgbXkgd2F4IGJlZAAAAAIAAAAAAAAAzQDMAAAAAAAAAAAAAAAAAAAAAAAAAAAAfQAAAQIBAwADAAQABQAGAAcACAAJAAoACwAMAA0ADgAPABAAEQASABMAFAAVABYAFwAYABkAGgAbABwAHQAeAB8AIAAhACIAIwAkACUAJgAnACgAKQAqACsALAAtAC4ALwAwADEAMgAzADQANQA2ADcAOAA5ADoAOwA8AD0APgA/AEAAQQBCAEMARABFAEYARwBIAEkASgBLAEwATQBOAE8AUABRAFIAUwBUAFUAVgBXAFgAWQBaAFsAXABdAF4AXwBgAGEBBACtAMkAxwCuAGIAYwCQAGQAywBlAMgAygDPAMwAzQDOAOkAZgDTANAA0QCvAGcA8ACRANYGZ2x5cGgxBmdseXBoMgd1bmkwMDdGAAAAAAAB//8AAgABAAAADAAAABYAAAACAAEAAQB8AAEABAAAAAIAAAAAAAAAAQAAAADUJJkmAAAAANRJTdAAAAAA1ElN0A==) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+.black       { background-color: #000000; }
+.dark-blue   { background-color: #1D2B53; }
+.dark-purple { background-color: #7E2553; }
+.dark-green  { background-color: #008751; }
+.brown       { background-color: #AB5236; }
+.dark-gray   { background-color: #5F574F; }
+.light-gray  { background-color: #C2C3C7; }
+.white       { background-color: #FFF1E8; }
+.red         { background-color: #FF004D; }
+.orange      { background-color: #FFA300; }
+.yellow      { background-color: #FFEC27; }
+.green       { background-color: #00E436; }
+.blue        { background-color: #29ADFF; }
+.indigo      { background-color: #83769C; }
+.pink        { background-color: #FF77A8; }
+.peach       { background-color: #FFCCAA; }
+
+
+/* The heart of the matter */
+.frame-group > .frames-row {
+  overflow-x: scroll;
+  white-space: nowrap;
+  margin-top:10px;
+  height: 64px;
+
+}
+.frame-group > .frames-row > .frame-thumb {
+  display: inline-block;
+  float: none;
+  width: 64px;
+  height: 48px;
+   background-color: #29ADFF;
+   color: #000;
+   margin-right:10px;
+
+}
+.frame-group > .frames-row > .frame-thumb-add {
+  display: inline-block;
+  float: none;
+  width: 64px;
+  height: 48px;
+   background-color: #C2C3C;
+   margin-right:10px;
+}
+.frame-group p { font-family: 'PICO-8 mono'; margin-top:5px; margin-left:5px;}
+
+#frames-row .active { background-color: #1D2B53; color:#FFF1E8; }
+
+canvas {
+  image-rendering: optimizeSpeed;             /* Older versions of FF          */
+  image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+  image-rendering: -webkit-optimize-contrast; /* Safari                        */
+  image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+  image-rendering: pixelated;                 /* Awesome future-browsers       */
+  -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+}
+
+/* This stylesheet generated by Transfonter (https://transfonter.org) on September 11, 2017 7:23 AM */
+
+
+
+/* dirty bootstrap overrides */
+
+.btn {
+  border-radius:0;
+  font-family:'PICO-8 mono';
+  font-size: 1em;
+}
+
+
+.btn-default {
+color: #333;
+background-color: #fff;
+border-color: #ccc;
+}
+.btn-primary {
+color: #fff;
+background-color: #29ADFF;
+border-color: #29ADFF;
+}
+.btn-success {
+color: #fff;
+background-color: #00E436;
+border-color: #00E436;
+}
+.btn-info {
+color: #fff;
+background-color: #29ADFF;
+border-color: #29ADFF;
+}
+.btn-warning {
+color: #fff;
+background-color: #FFA300;
+border-color: #FFA300;
+}
+.btn-danger {
+color: #fff;
+background-color: #FF004D;
+border-color: #FF004D;
+}
+
+#debugLUA { margin-top:20px; font-family: monospace; background-color: #eee; color: #5F574F; padding:10px; font-size:11px; font-weight:bold; }
+
+</style>
+
+
+</body>
+</html>
