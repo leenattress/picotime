@@ -19,6 +19,7 @@
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "fs-sync": "^1.0.6",
-    "luamin": "^1.0.4"
+    "luamin": "^1.0.4",
+    "pngjs": "^5.0.0"
   }
 }
