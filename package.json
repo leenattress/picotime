@@ -7,7 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "editor": "node index.js",
     "extract": "node bin/extract.js",
-    "build": "node bin/build.js"
+    "build": "node bin/build.js",
+    "export": "cd bin/pico-8/ && pico8 '../../build/built.p8' -export '-i 32 -s 2 -c 12 foo.bin'",
+    "start": "cd bin/pico-8/ && pico8 \"../../build/built.p8\" -run",
+    "watch": "npm run build && npm run start",
+    "dev": "nodemon --legacy-watch --exec npm run watch"
   },
   "keywords": [
     "pico8",
@@ -19,7 +23,11 @@
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "fs-sync": "^1.0.6",
+    "jimp": "^0.12.0",
     "luamin": "^1.0.4",
     "pngjs": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

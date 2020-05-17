@@ -30,6 +30,7 @@ let lblData = [];
 let gffData = [];
 let mapData = [];
 let sfxData = [];
+let musData = [];
 
 let codePart = "top";
 
@@ -40,6 +41,7 @@ lines.forEach((line) => {
   if (line.includes("__gff__")) codePart = "gff";
   if (line.includes("__map__")) codePart = "map";
   if (line.includes("__sfx__")) codePart = "sfx";
+  if (line.includes("__music__")) codePart = "mus";
 
   if (
     line !== "" &&
@@ -48,7 +50,8 @@ lines.forEach((line) => {
     line !== "__label__" &&
     line !== "__gff__" &&
     line !== "__map__" &&
-    line !== "__sfx__"
+    line !== "__sfx__" &&
+    line !== "__music__"
   ) {
     switch (codePart) {
       case "top":
@@ -72,6 +75,9 @@ lines.forEach((line) => {
       case "sfx":
         sfxData.push(line);
         break;
+      case "mus":
+        musData.push(line);
+        break;
       default:
     }
   }
@@ -84,8 +90,12 @@ console.log("lbl:", lblData.length);
 console.log("gff:", gffData.length);
 console.log("map:", mapData.length);
 console.log("sfx:", sfxData.length);
+console.log("mus:", musData.length);
 
 function hex2dec(hexstr) {
+  if (hexstr === " ") {
+    return " ";
+  }
   return parseInt(Number("0x" + hexstr), 10);
 }
 function pico8tojson(data, returnString = true) {
@@ -103,6 +113,29 @@ function pico8tojson(data, returnString = true) {
   }
 }
 
+function writePng(gfxObject, file, forceHeight = 128) {
+  const width = gfxObject[0].length;
+  const height = Math.min(gfxObject.length, forceHeight);
+  const newfile = new PNG({ width, height });
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      let idx = (width * y + x) << 2;
+      let col;
+      if (gfxData.length === 32 && y > 31) {
+        col = palette[0];
+      } else {
+        col = palette[gfxObject[y][x]];
+      }
+      newfile.data[idx] = col[0]; // red
+      newfile.data[idx + 1] = col[1]; // green
+      newfile.data[idx + 2] = col[2]; // blue
+      newfile.data[idx + 3] = 0xff; // alpha
+    }
+  }
+  let buff = PNG.sync.write(newfile);
+  fs.write(file, buff);
+}
+
 fs.write(srcPath + "top.txt", topData.join("\n"));
 fs.write(srcPath + "code.lua", luaData.join("\n"));
 fs.write(srcPath + "gfx.json", pico8tojson(gfxData));
@@ -110,27 +143,10 @@ fs.write(srcPath + "lbl.json", pico8tojson(lblData));
 fs.write(srcPath + "gff.json", pico8tojson(gffData));
 fs.write(srcPath + "map.json", pico8tojson(mapData));
 fs.write(srcPath + "sfx.json", pico8tojson(sfxData));
+fs.write(srcPath + "mus.json", pico8tojson(musData));
 
 const gfxObject = pico8tojson(gfxData, false);
+writePng(gfxObject, srcPath + "gfx.png", 64);
 
-// write png image of sprite area
-let newfile = new PNG({ width: 127, height: 63 });
-for (let y = 0; y < newfile.height; y++) {
-  for (let x = 0; x < newfile.width; x++) {
-    let idx = (newfile.width * y + x) << 2;
-    let col;
-    // console.log(palette)
-    if (gfxData.length === 32 && y > 31) {
-      col = palette[0];
-    } else {
-      col = palette[gfxObject[y][x]];
-    }
-    newfile.data[idx] = col[0]; // red
-    newfile.data[idx + 1] = col[1]; // green
-    newfile.data[idx + 2] = col[2]; // blue
-    newfile.data[idx + 3] = 0xff; // alpha
-  }
-}
-
-let buff = PNG.sync.write(newfile);
-fs.write(__dirname + "/gfx.png", buff);
+const lblObject = pico8tojson(lblData, false);
+writePng(lblObject, srcPath + "lbl.png");

@@ -1040,13 +1040,7 @@ function gui()
   rectfill(c1_x+rx+8,c1_y+ry,c1_x+rx+8+l,c1_y+ry+h,7)
   spr(2,c1_x+l+rx+8,c1_y+ry)
   print("keys:"..key_n,c1_x+rx+10,c1_y+ry+2,5)
-  --timestring = 'speedrun- '..speedrun_m..":"..speedrun_s..":"..speedrun_frame
-  --print(timestring, c1_x+4, c1_y+11, 0)
-  --print(timestring, c1_x+4, c1_y+13, 0)
-  --print(timestring, c1_x+3, c1_y+12, 0)
-  --print(timestring, c1_x+5, c1_y+12, 0)
-  --print(timestring, c1_x+4, c1_y+12, 7)
-  --print('cpu:'..stat(1)..' diff:'..difficulty, c1_x+10, c1_y+18, 7)
+
 end
 function _draw()
   cls()
